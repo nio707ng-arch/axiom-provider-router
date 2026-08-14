@@ -8,10 +8,10 @@ license = "Apache-2.0"
 readme = "README.md"
 homepage = "https://github.com/latentmeta/darial"
 repository = "https://github.com/latentmeta/darial"
-documentation = "https://github.com/latentmeta/darial#readme"
+documentation = "https://docs.rs/darial"
 keywords = ["llm", "gateway", "privacy", "openai-compatible"]
 categories = ["command-line-utilities", "network-programming"]
-authors = ["Darial Contributors"]
+authors = ["thanos vassilakis"]
 include = [
     "/src/**",
     "/examples/**",

@@ -1,5 +1,11 @@
 # Darial
 
+[![crates.io](https://img.shields.io/crates/v/darial.svg)](https://crates.io/crates/darial)
+[![docs.rs](https://docs.rs/darial/badge.svg)](https://docs.rs/darial)
+[![CI](https://github.com/latentmeta/darial/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/latentmeta/darial/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![MSRV](https://img.shields.io/badge/MSRV-1.75-blue)](Cargo.toml)
+
 **Darial** is a privacy-preserving, provider-neutral LLM gateway written in Rust. Approved applications talk to a local OpenAI-compatible API on loopback; Darial authenticates authorized use, applies policy, and routes only to administrator-configured LLM providers.
 
 ## Safety and compliance boundary
@@ -121,7 +127,6 @@ Initial release targets a useful OpenAI Chat Completions subset (`/v1/chat/compl
 | Document | Contents |
 |----------|----------|
 | [docs/installation.md](docs/installation.md) | Native, Homebrew, and crates.io |
-| [docs/releasing.md](docs/releasing.md) | crates.io + Homebrew publish steps |
 | [docs/containers.md](docs/containers.md) | Docker and Apple Container |
 | [docs/architecture.md](docs/architecture.md) | Components, trust boundaries, deployment profiles |
 | [docs/protocol.md](docs/protocol.md) | Normative wire protocol |
