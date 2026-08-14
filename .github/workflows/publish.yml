@@ -1,0 +1,77 @@
+# Publish crate `darial` to crates.io as owner `thanos` (same account as oratos).
+# First publish needs CARGO_REGISTRY_TOKEN from that account; later releases use Trusted Publishing.
+name: publish
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Pack and verify without uploading to crates.io
+        type: boolean
+        default: true
+
+concurrency:
+  group: crates-io-publish
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    if: github.repository == 'latentmeta/darial'
+    runs-on: ubuntu-latest
+    environment: crates-io
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+      - uses: Swatinem/rust-cache@f13886b937689c021905a6b909291d217814e181 # v2.8.0
+
+      - name: Check Cargo.toml version matches tag
+        if: github.event_name == 'push'
+        run: |
+          set -euo pipefail
+          tag="${GITHUB_REF_NAME#v}"
+          ver="$(sed -n 's/^version = "\([^"]*\)"/\1/p' Cargo.toml | head -1)"
+          if [ "$tag" != "$ver" ]; then
+            echo "tag v${tag} does not match Cargo.toml version ${ver}" >&2
+            exit 1
+          fi
+
+      - name: Test
+        run: cargo test --all-targets --locked
+
+      - name: Package
+        run: cargo package --locked
+
+      - name: Authenticate with crates.io (OIDC)
+        id: auth
+        if: ${{ github.event_name == 'push' || !inputs.dry_run }}
+        continue-on-error: true
+        uses: rust-lang/crates-io-auth-action@c6f97d42243bad5fab37ca0427f495c86d5b1a18 # v1.0.4
+
+      - name: Publish dry-run
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+        run: cargo publish --locked --dry-run
+
+      - name: Publish to crates.io
+        if: ${{ github.event_name == 'push' || !inputs.dry_run }}
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token || secrets.CARGO_REGISTRY_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${CARGO_REGISTRY_TOKEN:-}" ]; then
+            echo "No crates.io credentials." >&2
+            echo "Either configure Trusted Publishing for workflow publish.yml," >&2
+            echo "or set repository secret CARGO_REGISTRY_TOKEN (needed for the first publish)." >&2
+            exit 1
+          fi
+          cargo publish --locked --no-verify
