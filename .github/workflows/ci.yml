@@ -21,7 +21,7 @@ jobs:
         with:
           toolchain: stable
           components: rustfmt, clippy
-      - uses: Swatinem/rust-cache@f13886b937689c021905a6b909291d217814e181 # v2.8.0
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
       - name: Format
         run: cargo fmt --check
       - name: Clippy
@@ -44,7 +44,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: stable
-      - uses: Swatinem/rust-cache@f13886b937689c021905a6b909291d217814e181 # v2.8.0
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
       - name: Install cargo-audit
         run: cargo install cargo-audit --locked
       - name: Audit
@@ -57,7 +57,11 @@ jobs:
       - name: Scan for canary / private key material
         run: |
           set -euo pipefail
-          if grep -R --exclude-dir=target --exclude-dir=.git -nE 'BEGIN (RSA |OPENSSH |EC )?PRIVATE KEY|sk-live-|AKIA[0-9A-Z]{16}' . ; then
+          # Split needles so this workflow file does not match itself.
+          live="sk-li"
+          live+="ve-"
+          pattern="BEGIN (RSA |OPENSSH |EC )?PRIVATE KEY|${live}|AKIA[0-9A-Z]{16}"
+          if grep -R --exclude-dir=target --exclude-dir=.git -nE "${pattern}" . ; then
             echo "Potential secret material found" >&2
             exit 1
           fi
