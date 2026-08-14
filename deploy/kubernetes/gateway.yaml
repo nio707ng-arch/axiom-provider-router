@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: darial-gateway
+  labels:
+    app: darial-gateway
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: darial-gateway
+  template:
+    metadata:
+      labels:
+        app: darial-gateway
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: gateway
+          image: darial:0.1.0
+          args: ["gateway", "serve", "--config", "/config/gateway.toml"]
+          ports:
+            - containerPort: 8443
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8443
+            initialDelaySeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8443
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: config
+              mountPath: /config
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+          envFrom:
+            - secretRef:
+                name: darial-gateway-secrets
+      volumes:
+        - name: config
+          configMap:
+            name: darial-gateway-config
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: darial-gateway
+spec:
+  selector:
+    app: darial-gateway
+  ports:
+    - port: 443
+      targetPort: 8443
+      name: https

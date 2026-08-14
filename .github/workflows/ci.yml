@@ -1,0 +1,64 @@
+name: ci
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  rust:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@f13886b937689c021905a6b909291d217814e181 # v2.8.0
+      - name: Format
+        run: cargo fmt --check
+      - name: Clippy
+        run: cargo clippy --all-targets -- -D warnings
+      - name: Test
+        run: cargo test --all-targets
+      - name: Check configs
+        run: |
+          cargo build
+          ./target/debug/darial gateway check-config --config examples/gateway.toml
+          ./target/debug/darial agent check-config --config examples/agent.toml
+          ./target/debug/darial relay check-config --config examples/relay.toml
+          ./target/debug/darial gateway check-config --config deploy/compose/config/gateway.toml
+          ./target/debug/darial agent check-config --config deploy/compose/config/agent.toml
+
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+      - uses: Swatinem/rust-cache@f13886b937689c021905a6b909291d217814e181 # v2.8.0
+      - name: Install cargo-audit
+        run: cargo install cargo-audit --locked
+      - name: Audit
+        run: cargo audit
+
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - name: Scan for canary / private key material
+        run: |
+          set -euo pipefail
+          if grep -R --exclude-dir=target --exclude-dir=.git -nE 'BEGIN (RSA |OPENSSH |EC )?PRIVATE KEY|sk-live-|AKIA[0-9A-Z]{16}' . ; then
+            echo "Potential secret material found" >&2
+            exit 1
+          fi
+          echo "secret scan ok"

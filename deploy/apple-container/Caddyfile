@@ -1,0 +1,14 @@
+{$DARIAL_GATEWAY_HOST:localhost} {
+	reverse_proxy {$DARIAL_UPSTREAM:darial-gateway.test:8443} {
+		flush_interval -1
+		transport http {
+			read_timeout 5m
+			write_timeout 5m
+		}
+	}
+
+	log {
+		output stdout
+		format json
+	}
+}

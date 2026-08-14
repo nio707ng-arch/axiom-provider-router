@@ -1,0 +1,14 @@
+/target
+.git
+.github
+baoulo
+**/*.md
+!README.md
+docs
+tests
+examples
+deploy/compose
+deploy/kubernetes
+deploy/systemd
+deploy/egress-inventory.json
+**/.DS_Store

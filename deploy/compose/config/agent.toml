@@ -1,0 +1,38 @@
+profile = "dev"
+role = "agent"
+
+# Bind all interfaces inside the container. Compose publishes only 127.0.0.1:8080
+# on the host. Production profile still refuses this bind.
+[listen]
+bind = "0.0.0.0:8080"
+allow_non_loopback = true
+
+[auth]
+require_local_auth = true
+local_token_env = "DARIAL_LOCAL_TOKEN"
+default_tenant = "default"
+
+[gateway]
+url = "https://gateway.localhost"
+auth_token_env = "DARIAL_GATEWAY_TOKEN"
+privacy_profile = "direct"
+
+[tls]
+# Caddy local PKI (tls internal / *.localhost). Remove this section when the
+# gateway hostname uses a public or enterprise-trusted certificate.
+additional_roots = "/data/caddy/pki/authorities/local/root.crt"
+
+[dlp]
+enabled = true
+default_action = "block"
+
+[limits]
+max_body_bytes = 4194304
+request_timeout_secs = 120
+
+[telemetry]
+json_logs = true
+
+[model_aliases.darial-mock]
+provider = "mock"
+model = "mock-1"

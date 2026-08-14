@@ -1,0 +1,146 @@
+[package]
+name = "darial"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.75"
+description = "Privacy-preserving, provider-neutral LLM gateway"
+license = "Apache-2.0"
+readme = "README.md"
+homepage = "https://github.com/latentmeta/darial"
+repository = "https://github.com/latentmeta/darial"
+documentation = "https://github.com/latentmeta/darial#readme"
+keywords = ["llm", "gateway", "privacy", "openai-compatible"]
+categories = ["command-line-utilities", "network-programming"]
+authors = ["Darial Contributors"]
+include = [
+    "/src/**",
+    "/examples/**",
+    "/schemas/**",
+    "/docs/**",
+    "/Cargo.toml",
+    "/Cargo.lock",
+    "/README.md",
+    "/LICENSE",
+    "/CHANGELOG.md",
+    "/SECURITY.md",
+    "/ACCEPTABLE_USE.md",
+    "/CONTRIBUTING.md",
+    "/CODE_OF_CONDUCT.md",
+]
+
+[[bin]]
+name = "darial"
+path = "src/main.rs"
+
+[dependencies]
+# Async runtime and HTTP
+tokio = { version = "1.43", features = ["rt-multi-thread", "macros", "signal", "sync", "time", "io-util", "fs"] }
+axum = { version = "0.8", features = ["macros"] }
+tower = { version = "0.5", features = ["limit", "timeout", "util"] }
+tower-http = { version = "0.6", features = ["limit", "timeout", "trace", "cors"] }
+hyper = { version = "1.6", features = ["server", "http1"] }
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls", "stream", "http2"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+toml = "0.8"
+
+# CLI
+clap = { version = "4.5", features = ["derive", "env"] }
+
+# Errors / logging
+thiserror = "2.0"
+anyhow = "1.0"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+# Security / secrets
+secrecy = { version = "0.10", features = ["serde"] }
+zeroize = { version = "1.8", features = ["derive"] }
+sha2 = "0.10"
+hmac = "0.12"
+hex = "0.4"
+subtle = "2.6"
+base64 = "0.22"
+rand = "0.8"
+
+# Identity / time
+uuid = { version = "1.12", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde", "clock"] }
+
+# Regex for DLP
+regex = "1.11"
+once_cell = "1.20"
+
+# Metrics (privacy-safe)
+metrics = "0.24"
+metrics-exporter-prometheus = { version = "0.16", default-features = false, features = ["http-listener"] }
+
+# Async streams
+futures = "0.3"
+tokio-stream = { version = "0.1", features = ["sync"] }
+async-trait = "0.1"
+async-stream = "0.3"
+bytes = "1.9"
+http = "1.2"
+http-body-util = "0.1"
+pin-project-lite = "0.2"
+
+# HPKE / OHTTP-inspired privacy (Milestone 4)
+# hpke crate provides RFC 9180 HPKE; private mode uses application-level
+# framing inspired by RFC 9458 Oblivious HTTP. See docs/adr/0004-private-mode.md.
+hpke = { version = "0.12", default-features = false, features = ["std", "x25519"] }
+
+[dev-dependencies]
+tokio-test = "0.4"
+wiremock = "0.6"
+tempfile = "3.15"
+proptest = "1.6"
+assert_matches = "1.5"
+tracing-test = "0.2"
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls", "blocking"] }
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = "symbols"
+panic = "abort"
+
+[lints.rust]
+unsafe_code = "deny"
+missing_docs = "warn"
+
+[lints.clippy]
+all = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+module_name_repetitions = "allow"
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+must_use_candidate = "allow"
+uninlined_format_args = "allow"
+doc_markdown = "allow"
+cast_possible_truncation = "allow"
+cast_sign_loss = "allow"
+cast_precision_loss = "allow"
+unnecessary_wraps = "allow"
+items_after_statements = "allow"
+too_many_lines = "allow"
+similar_names = "allow"
+struct_excessive_bools = "allow"
+wildcard_imports = "allow"
+redundant_closure_for_method_calls = "allow"
+unused_async = "allow"
+manual_let_else = "allow"
+option_if_let_else = "allow"
+map_unwrap_or = "allow"
+single_match_else = "allow"
+match_same_arms = "allow"
+needless_pass_by_value = "allow"
+ref_option = "allow"
+trivially_copy_pass_by_ref = "allow"
+return_self_not_must_use = "allow"
+ignored_unit_patterns = "allow"
+should_panic_without_expect = "allow"
+derivable_impls = "allow"
+enum_glob_use = "allow"

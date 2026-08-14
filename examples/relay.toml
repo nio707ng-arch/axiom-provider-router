@@ -1,0 +1,15 @@
+profile = "dev"
+role = "relay"
+
+[listen]
+bind = "127.0.0.1:8444"
+
+[relay]
+# Administrator-configured gateway only — never taken from clients.
+gateway_url = "http://127.0.0.1:8443"
+
+[limits]
+request_timeout_secs = 120
+
+[telemetry]
+json_logs = false

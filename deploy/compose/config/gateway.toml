@@ -1,0 +1,40 @@
+profile = "production"
+role = "gateway"
+
+[listen]
+bind = "0.0.0.0:8443"
+
+[auth]
+require_local_auth = true
+token_env = "DARIAL_GATEWAY_TOKEN"
+default_tenant = "default"
+
+[limits]
+max_body_bytes = 4194304
+requests_per_minute = 120
+max_concurrency = 32
+request_timeout_secs = 120
+max_stream_secs = 300
+
+[telemetry]
+json_logs = true
+
+[providers.mock]
+enabled = true
+kind = "mock"
+models = ["mock-1"]
+
+[providers.openai]
+enabled = false
+kind = "openai"
+base_url = "https://api.openai.com/v1"
+api_key_env = "DARIAL_OPENAI_API_KEY"
+models = ["gpt-4o-mini"]
+
+[model_aliases.darial-mock]
+provider = "mock"
+model = "mock-1"
+
+[model_aliases.gpt-4o-mini]
+provider = "openai"
+model = "gpt-4o-mini"

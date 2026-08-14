@@ -1,0 +1,23 @@
+# Local: Caddy issues an internal cert for *.localhost.
+# Production: set DARIAL_GATEWAY_HOST to a public DNS name and CADDY_EMAIL;
+# Caddy will obtain a publicly trusted certificate. Ask administrators to
+# allowlist that hostname on port 443. Darial is not a firewall bypass.
+
+{
+	email {$CADDY_EMAIL:}
+}
+
+{$DARIAL_GATEWAY_HOST:gateway.localhost} {
+	reverse_proxy gateway:8443 {
+		flush_interval -1
+		transport http {
+			read_timeout 5m
+			write_timeout 5m
+		}
+	}
+
+	log {
+		output stdout
+		format json
+	}
+}

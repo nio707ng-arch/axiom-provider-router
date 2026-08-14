@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "product": "darial",
+  "description": "Machine-readable egress inventory for enterprise allowlisting. Destinations are administrator-configured; clients cannot select arbitrary hosts.",
+  "endpoints": [
+    {
+      "name": "darial-gateway",
+      "host": "gateway.darial.example",
+      "port": 443,
+      "protocol": "https",
+      "purpose": "Agent direct mode and key discovery",
+      "required_when": "direct or private mode"
+    },
+    {
+      "name": "darial-relay",
+      "host": "relay.darial.example",
+      "port": 443,
+      "protocol": "https",
+      "purpose": "Private buffered mode envelope forward",
+      "required_when": "private_buffered"
+    },
+    {
+      "name": "openai",
+      "host": "api.openai.com",
+      "port": 443,
+      "protocol": "https",
+      "purpose": "OpenAI provider (if enabled in gateway config)",
+      "required_when": "providers.openai.enabled"
+    },
+    {
+      "name": "anthropic",
+      "host": "api.anthropic.com",
+      "port": 443,
+      "protocol": "https",
+      "purpose": "Anthropic provider (if enabled)",
+      "required_when": "providers.anthropic.enabled"
+    },
+    {
+      "name": "gemini",
+      "host": "generativelanguage.googleapis.com",
+      "port": 443,
+      "protocol": "https",
+      "purpose": "Google Gemini provider (if enabled)",
+      "required_when": "providers.gemini.enabled"
+    }
+  ],
+  "notes": [
+    "Obtain authorization before deployment.",
+    "Ask administrators to allowlist these hostnames.",
+    "Darial does not implement fallback transports around blocked HTTPS."
+  ]
+}

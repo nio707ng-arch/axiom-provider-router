@@ -1,0 +1,27 @@
+[Unit]
+Description=Darial LLM Gateway
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=darial
+Group=darial
+ExecStart=/usr/local/bin/darial gateway serve --config /etc/darial/gateway.toml
+Restart=on-failure
+RestartSec=2
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/var/lib/darial
+AmbientCapabilities=
+CapabilityBoundingSet=
+LockPersonality=true
+MemoryDenyWriteExecute=true
+RestrictSUIDSGID=true
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
+
+[Install]
+WantedBy=multi-user.target

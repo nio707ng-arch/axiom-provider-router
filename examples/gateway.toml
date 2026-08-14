@@ -1,0 +1,51 @@
+profile = "dev"
+role = "gateway"
+
+[listen]
+bind = "127.0.0.1:8443"
+
+[auth]
+require_local_auth = true
+token_env = "DARIAL_GATEWAY_TOKEN"
+default_tenant = "default"
+
+[limits]
+max_body_bytes = 4194304
+requests_per_minute = 120
+max_concurrency = 32
+
+[telemetry]
+json_logs = false
+
+[privacy]
+# key_dir = "./keys"  # enable for private mode
+
+[providers.mock]
+enabled = true
+kind = "mock"
+models = ["mock-1"]
+
+[providers.openai]
+enabled = false
+kind = "openai"
+base_url = "https://api.openai.com/v1"
+api_key_env = "DARIAL_OPENAI_API_KEY"
+models = ["gpt-4o-mini"]
+
+[providers.anthropic]
+enabled = false
+kind = "anthropic"
+base_url = "https://api.anthropic.com"
+api_key_env = "DARIAL_ANTHROPIC_API_KEY"
+models = ["claude-3-5-haiku-latest"]
+
+[providers.gemini]
+enabled = false
+kind = "gemini"
+base_url = "https://generativelanguage.googleapis.com"
+api_key_env = "DARIAL_GEMINI_API_KEY"
+models = ["gemini-2.0-flash"]
+
+[model_aliases.darial-mock]
+provider = "mock"
+model = "mock-1"

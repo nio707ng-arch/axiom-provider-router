@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://darial.example/schemas/chat-request-v1.json",
+  "title": "DarialChatRequest",
+  "type": "object",
+  "required": ["ir_version", "request_id", "idempotency_key", "created_at", "model", "messages"],
+  "properties": {
+    "ir_version": { "type": "integer", "const": 1 },
+    "request_id": { "type": "string", "format": "uuid" },
+    "idempotency_key": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "created_at": { "type": "string", "format": "date-time" },
+    "privacy_profile": { "enum": ["direct", "private_buffered"] },
+    "tenant_id": { "type": "string" },
+    "model": { "type": "string", "minLength": 1 },
+    "messages": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 128,
+      "items": { "$ref": "#/$defs/message" }
+    },
+    "stream": { "type": "boolean" }
+  },
+  "$defs": {
+    "message": {
+      "type": "object",
+      "required": ["role", "content"],
+      "properties": {
+        "role": { "enum": ["system", "developer", "user", "assistant", "tool"] },
+        "content": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "required": ["type", "text"],
+                "properties": {
+                  "type": { "const": "text" },
+                  "text": { "type": "string" }
+                }
+              },
+              {
+                "type": "object",
+                "required": ["type", "media_type", "data_base64"],
+                "properties": {
+                  "type": { "const": "image_inline" },
+                  "media_type": { "type": "string" },
+                  "data_base64": { "type": "string" }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

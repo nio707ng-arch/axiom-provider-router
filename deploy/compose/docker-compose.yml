@@ -1,0 +1,97 @@
+services:
+  gateway:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile
+    image: darial:0.1.0
+    command: ["gateway", "serve", "--config", "/config/gateway.toml"]
+    env_file:
+      - .env
+    environment:
+      DARIAL_LOG: info
+    volumes:
+      - ./config/gateway.toml:/config/gateway.toml:ro
+    expose:
+      - "8443"
+    networks:
+      - darial
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8443/healthz"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2.10-alpine
+    env_file:
+      - .env
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      gateway:
+        condition: service_healthy
+    networks:
+      darial:
+        aliases:
+          - ${DARIAL_GATEWAY_HOST:-gateway.localhost}
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+
+  agent:
+    image: darial:0.1.0
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile
+    command: ["agent", "serve", "--config", "/config/agent.toml"]
+    env_file:
+      - .env
+    environment:
+      DARIAL_LOG: info
+      DARIAL_WAIT_FOR_CA: /data/caddy/pki/authorities/local/root.crt
+    volumes:
+      - ./config/agent.toml:/config/agent.toml:ro
+      - caddy_data:/data:ro
+    ports:
+      - "127.0.0.1:8080:8080"
+    networks:
+      - darial
+    depends_on:
+      caddy:
+        condition: service_started
+      gateway:
+        condition: service_healthy
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/healthz"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:
+
+networks:
+  darial:
+    name: darial
