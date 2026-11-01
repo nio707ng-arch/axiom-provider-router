@@ -1,6 +1,6 @@
 # Installation
 
-Darial is a single binary named `darial`. The same binary runs the **agent** (loopback OpenAI-compatible API) and the **gateway** (policy + provider routing). Choose a role with a subcommand.
+Darial is a single binary named `axiom-gateway`. The same binary runs the **agent** (loopback OpenAI-compatible API) and the **gateway** (policy + provider routing). Choose a role with a subcommand.
 
 Obtain authorization before pointing the agent at a remote gateway. Ask administrators to allowlist the gateway hostname on port 443. Darial is not a firewall bypass.
 
@@ -68,15 +68,15 @@ Put Caddy on port 443 in front of `127.0.0.1:8443` for a real deployment. Ask IT
 
 ```bash
 brew install darial
-darial agent serve --config "$(brew --prefix)/etc/darial/agent.toml"
-darial gateway serve --config "$(brew --prefix)/etc/darial/gateway.toml"
+axiom-gateway agent serve --config "$(brew --prefix)/etc/darial/agent.toml"
+axiom-gateway gateway serve --config "$(brew --prefix)/etc/darial/gateway.toml"
 ```
 
 ## crates.io
 
 ```bash
 cargo install darial --locked --version 0.1.0
-darial --version
+axiom-gateway --version
 ```
 
 Requires a Rust toolchain (MSRV 1.75). This installs only the `darial` binary, not the Homebrew service wrappers.
@@ -99,7 +99,7 @@ source "$HOME/.cargo/env"
 git clone https://github.com/latentmeta/darial.git
 cd darial
 cargo build --release
-sudo install -m 0755 target/release/darial /usr/local/bin/darial
+sudo install -m 0755 target/release/axiom-gateway /usr/local/bin/axiom-gateway
 darial --version
 ```
 
@@ -135,7 +135,7 @@ cd darial
 cargo build --release
 ```
 
-The binary is `target\release\darial.exe`. Copy it somewhere on your `PATH`, for example:
+The binary is `target\release\axiom-gateway.exe`. Copy it somewhere on your `PATH`, for example:
 
 ```powershell
 New-Item -ItemType Directory -Force $env:USERPROFILE\bin | Out-Null
@@ -216,7 +216,7 @@ systemctl --user daemon-reload
 systemctl --user enable --now darial-agent
 ```
 
-On macOS you can keep `darial agent serve` in a terminal, or wrap the same command in a LaunchAgent if you want it at login. Do not expose port 8080 in the firewall.
+On macOS you can keep `axiom-gateway agent serve` in a terminal, or wrap the same command in a LaunchAgent if you want it at login. Do not expose port 8080 in the firewall.
 
 ### Windows
 
