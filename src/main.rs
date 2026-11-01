@@ -1,4 +1,4 @@
-//! Darial CLI — agent, relay, and gateway roles.
+//! AXIOM Gateway CLI — adopted from Darial; agent, relay, and gateway roles.
 
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
@@ -9,9 +9,9 @@ use darial::telemetry;
 
 #[derive(Parser, Debug)]
 #[command(
-    name = "darial",
+    name = "axiom-gateway",
     version,
-    about = "Privacy-preserving provider-neutral LLM gateway"
+    about = "AXIOM provider-neutral LLM gateway"
 )]
 struct Cli {
     #[command(subcommand)]
