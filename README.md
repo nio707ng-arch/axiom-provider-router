@@ -1,4 +1,6 @@
-# Darial
+# AXIOM Gateway
+
+> AXIOM's provider-neutral gateway, adopted from the Darial project with minimal implementation changes. Upstream attribution and Apache-2.0 licensing are retained.
 
 [![crates.io](https://img.shields.io/crates/v/darial.svg)](https://crates.io/crates/darial)
 [![docs.rs](https://docs.rs/darial/badge.svg)](https://docs.rs/darial)
@@ -6,16 +8,16 @@
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![MSRV](https://img.shields.io/badge/MSRV-1.75-blue)](Cargo.toml)
 
-**Darial** is a privacy-preserving, provider-neutral LLM gateway written in Rust. Approved applications talk to a local OpenAI-compatible API on loopback; Darial authenticates authorized use, applies policy, and routes only to administrator-configured LLM providers.
+**AXIOM Gateway** is a privacy-preserving, provider-neutral LLM gateway written in Rust, based on Darial. Approved applications talk to a local OpenAI-compatible API on loopback; Darial authenticates authorized use, applies policy, and routes only to administrator-configured LLM providers.
 
 ## Safety and compliance boundary
 
-Darial is an **authorized LLM gateway**, not a firewall circumvention tool or general-purpose proxy.
+AXIOM Gateway is an **authorized LLM gateway**, not a firewall circumvention tool or general-purpose proxy.
 
 - It does **not** forward arbitrary TCP, UDP, HTTP, DNS, WebSocket, CONNECT, SOCKS, or user-selected destination traffic.
 - Upstream destinations come **only** from administrator-configured provider allowlists. Clients cannot supply arbitrary upstream URLs.
 - The local agent binds to `127.0.0.1` / `::1` by default. Non-loopback binding requires an explicit high-friction opt-in and prints a prominent warning.
-- Gateway and relay endpoints use ordinary, identifiable HTTPS hostnames and standard authentication. Darial does **not** implement domain fronting, traffic mimicry, covert channels, protocol obfuscation, certificate pinning intended to defeat enterprise inspection, or fallback transports around blocked HTTPS.
+- Gateway and relay endpoints use ordinary, identifiable HTTPS hostnames and standard authentication. AXIOM Gateway does **not** implement domain fronting, traffic mimicry, covert channels, protocol obfuscation, certificate pinning intended to defeat enterprise inspection, or fallback transports around blocked HTTPS.
 - A privacy layer can protect content from designated intermediaries (for example, a content-blind relay). **It does not grant permission to violate network policy.** Obtain authorization and ask administrators to allowlist the deployment hostname before use.
 - Darial does **not** claim end-to-end secrecy from the destination LLM provider: providers normally receive plaintext content to perform inference.
 
@@ -25,9 +27,9 @@ See [SECURITY.md](SECURITY.md), [docs/threat-model.md](docs/threat-model.md), [d
 
 | Role | Subcommand | Purpose |
 |------|------------|---------|
-| Local agent | `darial agent` | OpenAI-compatible API on loopback; DLP before egress |
-| Relay | `darial relay` | Content-blind forwarder for private mode (ciphertext only) |
-| Gateway | `darial gateway` | Auth, policy, provider routing |
+| Local agent | `axiom-gateway agent` | OpenAI-compatible API on loopback; DLP before egress |
+| Relay | `axiom-gateway relay` | Content-blind forwarder for private mode (ciphertext only) |
+| Gateway | `axiom-gateway gateway` | Auth, policy, provider routing |
 
 Modes:
 
@@ -62,7 +64,7 @@ Docker and Apple Container: [docs/containers.md](docs/containers.md).
 cargo build --release
 
 # Validate sample configs
-./target/release/darial agent check-config --config examples/agent.toml
+./target/release/axiom-gateway agent check-config --config examples/agent.toml
 ./target/release/darial gateway check-config --config examples/gateway.toml
 
 # Run gateway with the built-in mock provider (no live API keys)
@@ -76,7 +78,7 @@ curl -s http://127.0.0.1:8080/v1/models
 curl -s http://127.0.0.1:8080/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer local-dev-token" \
-  -d '{"model":"darial-mock","messages":[{"role":"user","content":"Hello"}]}'
+  -d '{"model":"axiom-mock","messages":[{"role":"user","content":"Hello"}]}'
 ```
 
 Placeholder domains and dummy keys appear in examples only. Replace them for real deployments. Never disable TLS verification silently.
