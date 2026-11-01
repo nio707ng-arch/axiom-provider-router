@@ -10,9 +10,9 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends ca-certificates wget \
     && rm -rf /var/lib/apt/lists/* \
     && useradd --uid 65532 --system --home /nonexistent --shell /usr/sbin/nologin darial
-COPY --from=build /src/target/release/darial /usr/local/bin/darial
+COPY --from=build /src/target/release/axiom-gateway /usr/local/bin/axiom-gateway
 COPY deploy/docker/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod 755 /usr/local/bin/darial /usr/local/bin/entrypoint.sh
+RUN chmod 755 /usr/local/bin/axiom-gateway /usr/local/bin/entrypoint.sh
 USER darial
 EXPOSE 8080 8443
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
