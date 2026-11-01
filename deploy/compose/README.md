@@ -1,6 +1,6 @@
 # Docker Compose: agent + gateway behind Caddy
 
-Darial’s gateway speaks HTTP on loopback inside the compose network. **Caddy** terminates ordinary HTTPS on port 443. The local agent is published only on the host loopback interface.
+AXIOM Gateway speaks HTTP on loopback inside the compose network. **Caddy** terminates ordinary HTTPS on port 443. The local agent is published only on the host loopback interface.
 
 ```text
 OpenCode / curl
@@ -35,7 +35,7 @@ curl -s http://127.0.0.1:8080/v1/models \
 curl -s http://127.0.0.1:8080/v1/chat/completions \
   -H "Authorization: Bearer $DARIAL_LOCAL_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"model":"darial-mock","messages":[{"role":"user","content":"Hello"}]}'
+  -d '{"model":"axiom-mock","messages":[{"role":"user","content":"Hello"}]}'
 ```
 
 Point OpenCode / Tidewave at `http://127.0.0.1:8080` with that bearer token.
