@@ -29,7 +29,7 @@ include = [
 ]
 
 [[bin]]
-name = "darial"
+name = "axiom-gateway"
 path = "src/main.rs"
 
 [dependencies]
