@@ -3,7 +3,7 @@ services:
     build:
       context: ../..
       dockerfile: deploy/docker/Dockerfile
-    image: darial:0.1.0
+    image: axiom-gateway:0.1.0
     command: ["gateway", "serve", "--config", "/config/gateway.toml"]
     env_file:
       - .env
