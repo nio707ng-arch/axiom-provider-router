@@ -31,7 +31,7 @@ jobs:
       - name: Check configs
         run: |
           cargo build
-          ./target/debug/darial gateway check-config --config examples/gateway.toml
+          ./target/debug/axiom-gateway gateway check-config --config examples/gateway.toml
           ./target/debug/darial agent check-config --config examples/agent.toml
           ./target/debug/darial relay check-config --config examples/relay.toml
           ./target/debug/darial gateway check-config --config deploy/compose/config/gateway.toml
