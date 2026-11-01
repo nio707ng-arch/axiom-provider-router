@@ -14,4 +14,4 @@ if [ -n "${DARIAL_WAIT_FOR_CA:-}" ]; then
     done
 fi
 
-exec /usr/local/bin/darial "$@"
+exec /usr/local/bin/axiom-gateway "$@"
